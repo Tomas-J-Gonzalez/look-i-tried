@@ -420,7 +420,7 @@ export default function Home() {
 
         {/* Center Preview - Always Centered */}
         <div className="flex justify-center items-start p-8">
-          <div className="w-full max-w-xl bg-white rounded-lg shadow-md p-6">
+          <div className="w-full max-w-xl">
             <PreviewCanvas
               faceImage={faceImage}
               selectedShirt={selectedShirt}

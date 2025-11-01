@@ -188,6 +188,23 @@ export default function PreviewCanvas({
   const [multiSelectStartPositions, setMultiSelectStartPositions] = useState<Map<string, Position>>(new Map());
   const animationFrameRef = useRef<number | null>(null);
 
+  // Preload footwear images to prevent lag
+  useEffect(() => {
+    const preloadImages = [
+      selectedShoes,
+      showLeftFoot ? "/outfits/shoes/leftfoot.png" : null,
+      showRightFoot ? "/outfits/shoes/rightfoot.png" : null,
+    ].filter(Boolean) as string[];
+
+    preloadImages.forEach(src => {
+      if (!imageCache.has(src)) {
+        loadImage(src).catch(() => {
+          // Silently fail preload
+        });
+      }
+    });
+  }, [selectedShoes, showLeftFoot, showRightFoot]);
+
   // Keyboard event handler for Delete/Backspace
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -218,6 +235,8 @@ export default function PreviewCanvas({
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.crossOrigin = "anonymous";
+      // Add loading attribute for better performance
+      img.loading = "eager";
       img.onload = () => {
         setImageCache(prev => new Map(prev).set(src, img));
         resolve(img);
@@ -982,10 +1001,10 @@ export default function PreviewCanvas({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-gray-900">Canvas</h2>
+      <div className="flex items-center justify-center">
+        <h2 className="text-lg font-bold text-gray-900 text-center">Canvas</h2>
         {selectedItems.length > 0 && (
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-gray-500 ml-4">
             {selectedItems.length} item{selectedItems.length > 1 ? 's' : ''} selected
             {selectedItems.length > 1 && <span className="ml-2 text-blue-600">(Move only)</span>}
           </div>
@@ -993,10 +1012,11 @@ export default function PreviewCanvas({
       </div>
 
       <div className="relative w-full flex justify-center">
-        {/* White background */}
-        <div className="inline-block relative" style={{
-          background: '#ffffff'
-        }}>
+        {/* Canvas with white background */}
+        <div className="inline-block relative bg-white rounded-lg shadow-sm"
+          style={{
+            padding: '1rem'
+          }}>
           {/* Scale Indicator - shows when resizing (single item only) */}
           {showScaleIndicator && dragItem && selectedItems.length === 1 && (
             <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-full text-sm font-medium z-10">
