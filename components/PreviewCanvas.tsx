@@ -845,9 +845,15 @@ export default function PreviewCanvas({
                 e.preventDefault();
                 const delta = -e.deltaY * 0.001;
                 const currentScale = getItemScale(dragItem);
-                // Scroll wheel scales proportionally
-                const newUniformScale = Math.max(0.3, Math.min(3, currentScale.x + delta));
-                updateItemScale(dragItem, { x: newUniformScale, y: newUniformScale });
+                
+                // Calculate aspect ratio
+                const aspectRatio = currentScale.x / currentScale.y;
+                
+                // Scale both dimensions but maintain the current aspect ratio
+                const newScaleX = Math.max(0.3, Math.min(3, currentScale.x + delta));
+                const newScaleY = Math.max(0.3, Math.min(3, newScaleX / aspectRatio));
+                
+                updateItemScale(dragItem, { x: newScaleX, y: newScaleY });
                 
                 setShowScaleIndicator(true);
                 setTimeout(() => setShowScaleIndicator(false), 1000);
