@@ -14,51 +14,47 @@ export default function Home() {
   const [selectedShirt, setSelectedShirt] = useState<string | null>(null);
   const [selectedPants, setSelectedPants] = useState<string | null>(null);
   const [selectedHeadwear, setSelectedHeadwear] = useState<string | null>(null);
-  const [selectedShoes, setSelectedShoes] = useState<string | null>(null);
+  const [selectedLeftShoe, setSelectedLeftShoe] = useState<string | null>(null);
+  const [selectedRightShoe, setSelectedRightShoe] = useState<string | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   
   // Optional addons (not shown by default)
   const [showLeftArm, setShowLeftArm] = useState(false);
   const [showRightArm, setShowRightArm] = useState(false);
-  const [showLeftFoot, setShowLeftFoot] = useState(false);
-  const [showRightFoot, setShowRightFoot] = useState(false);
   
   // Position state for each item
   const [facePosition, setFacePosition] = useState({ x: 0, y: 0 });
   const [shirtPosition, setShirtPosition] = useState({ x: 0, y: 0 });
   const [pantsPosition, setPantsPosition] = useState({ x: 0, y: 0 });
   const [headwearPosition, setHeadwearPosition] = useState({ x: 0, y: 0 });
-  const [shoesPosition, setShoesPosition] = useState({ x: 0, y: 0 });
+  const [leftShoePosition, setLeftShoePosition] = useState({ x: 0, y: 0 });
+  const [rightShoePosition, setRightShoePosition] = useState({ x: 0, y: 0 });
   const [leftArmPosition, setLeftArmPosition] = useState({ x: 0, y: 0 });
   const [rightArmPosition, setRightArmPosition] = useState({ x: 0, y: 0 });
-  const [leftFootPosition, setLeftFootPosition] = useState({ x: 0, y: 0 });
-  const [rightFootPosition, setRightFootPosition] = useState({ x: 0, y: 0 });
   
   // Size state for each item (separate width and height scale for aspect ratio control)
   const [faceScale, setFaceScale] = useState({ x: 1, y: 1 });
   const [shirtScale, setShirtScale] = useState({ x: 1, y: 1 });
   const [pantsScale, setPantsScale] = useState({ x: 1, y: 1 });
   const [headwearScale, setHeadwearScale] = useState({ x: 1, y: 1 });
-  const [shoesScale, setShoesScale] = useState({ x: 1, y: 1 });
+  const [leftShoeScale, setLeftShoeScale] = useState({ x: 1, y: 1 });
+  const [rightShoeScale, setRightShoeScale] = useState({ x: 1, y: 1 });
   const [leftArmScale, setLeftArmScale] = useState({ x: 1, y: 1 });
   const [rightArmScale, setRightArmScale] = useState({ x: 1, y: 1 });
-  const [leftFootScale, setLeftFootScale] = useState({ x: 1, y: 1 });
-  const [rightFootScale, setRightFootScale] = useState({ x: 1, y: 1 });
   
   // Rotation state for each item (in degrees)
   const [faceRotation, setFaceRotation] = useState(0);
   const [shirtRotation, setShirtRotation] = useState(0);
   const [pantsRotation, setPantsRotation] = useState(0);
   const [headwearRotation, setHeadwearRotation] = useState(0);
-  const [shoesRotation, setShoesRotation] = useState(0);
+  const [leftShoeRotation, setLeftShoeRotation] = useState(0);
+  const [rightShoeRotation, setRightShoeRotation] = useState(0);
   const [leftArmRotation, setLeftArmRotation] = useState(0);
   const [rightArmRotation, setRightArmRotation] = useState(0);
-  const [leftFootRotation, setLeftFootRotation] = useState(0);
-  const [rightFootRotation, setRightFootRotation] = useState(0);
   
   // Drawing order for z-index control (background always first, then order matters)
   const [drawingOrder, setDrawingOrder] = useState<string[]>([
-    'background', 'shoes', 'leftFoot', 'rightFoot', 'leftArm', 'rightArm', 'shirt', 'pants', 'headwear', 'head'
+    'background', 'leftShoe', 'rightShoe', 'leftArm', 'rightArm', 'shirt', 'pants', 'headwear', 'head'
   ]);
   
   // Panel visibility state
@@ -67,15 +63,6 @@ export default function Home() {
   
   // Selected items for transform panel (supports multi-select)
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  
-  // Text elements on canvas
-  const [textElements, setTextElements] = useState<Array<{
-    id: string;
-    text: string;
-    position: { x: number; y: number };
-    scale: number;
-    rotation: number;
-  }>>([]);
   
   // Note: "face" is now called "head" in the code for better naming
   
@@ -89,21 +76,21 @@ export default function Home() {
   // Capture current state for history
   const captureState = useCallback(() => {
     return {
-      facePosition, shirtPosition, pantsPosition, headwearPosition, shoesPosition,
-      leftArmPosition, rightArmPosition, leftFootPosition, rightFootPosition,
-      faceScale, shirtScale, pantsScale, headwearScale, shoesScale,
-      leftArmScale, rightArmScale, leftFootScale, rightFootScale,
-      faceRotation, shirtRotation, pantsRotation, headwearRotation, shoesRotation,
-      leftArmRotation, rightArmRotation, leftFootRotation, rightFootRotation,
+      facePosition, shirtPosition, pantsPosition, headwearPosition,
+      leftShoePosition, rightShoePosition, leftArmPosition, rightArmPosition,
+      faceScale, shirtScale, pantsScale, headwearScale,
+      leftShoeScale, rightShoeScale, leftArmScale, rightArmScale,
+      faceRotation, shirtRotation, pantsRotation, headwearRotation,
+      leftShoeRotation, rightShoeRotation, leftArmRotation, rightArmRotation,
       drawingOrder: [...drawingOrder],
     };
   }, [
-    facePosition, shirtPosition, pantsPosition, headwearPosition, shoesPosition,
-    leftArmPosition, rightArmPosition, leftFootPosition, rightFootPosition,
-    faceScale, shirtScale, pantsScale, headwearScale, shoesScale,
-    leftArmScale, rightArmScale, leftFootScale, rightFootScale,
-    faceRotation, shirtRotation, pantsRotation, headwearRotation, shoesRotation,
-    leftArmRotation, rightArmRotation, leftFootRotation, rightFootRotation,
+    facePosition, shirtPosition, pantsPosition, headwearPosition,
+    leftShoePosition, rightShoePosition, leftArmPosition, rightArmPosition,
+    faceScale, shirtScale, pantsScale, headwearScale,
+    leftShoeScale, rightShoeScale, leftArmScale, rightArmScale,
+    faceRotation, shirtRotation, pantsRotation, headwearRotation,
+    leftShoeRotation, rightShoeRotation, leftArmRotation, rightArmRotation,
     drawingOrder
   ]);
   
@@ -224,28 +211,22 @@ export default function Home() {
     "/outfits/headwear/pimphat.png",
   ];
 
-  const shoesOptions = [
+  const leftShoeOptions = [
     "/outfits/shoes/leftshoe.png",
-    "/outfits/shoes/rightshoe.png",
+    "/outfits/shoes/leftfoot.png",
     "/outfits/shoes/Birkens .png",
-    "/outfits/shoes/Birkens 2.png",
     "/outfits/shoes/heels one .png",
+  ];
+
+  const rightShoeOptions = [
+    "/outfits/shoes/rightshoe.png",
+    "/outfits/shoes/rightfoot.png",
+    "/outfits/shoes/Birkens 2.png",
     "/outfits/shoes/heels two.png",
   ];
 
   const handleRemoveFace = () => {
     setFaceImage(null);
-  };
-
-  const handleAddText = () => {
-    const newText = {
-      id: `text-${Date.now()}`,
-      text: 'Double click to edit',
-      position: { x: 0, y: 0 },
-      scale: 1,
-      rotation: 0,
-    };
-    setTextElements(prev => [...prev, newText]);
   };
 
   const handleClearCanvas = () => {
@@ -266,9 +247,6 @@ export default function Home() {
     setShowRightArm(false);
     setShowLeftFoot(false);
     setShowRightFoot(false);
-    
-    // Clear text elements
-    setTextElements([]);
     
       // Reset all positions
       setFacePosition({ x: 0, y: 0 });
@@ -381,7 +359,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50">
       {/* Navigation Bar */}
       <nav className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-8 py-4">
@@ -511,8 +489,6 @@ export default function Home() {
               onRightArmRotationChange={setRightArmRotation}
               onLeftFootRotationChange={setLeftFootRotation}
               onRightFootRotationChange={setRightFootRotation}
-              textElements={textElements}
-              onTextElementsChange={setTextElements}
               onItemSelect={setSelectedItems}
               onClearCanvas={handleClearCanvas}
               onDeleteSelected={handleDeleteSelected}
@@ -641,15 +617,6 @@ export default function Home() {
                       enabled={showRightFoot}
                       onToggle={setShowRightFoot}
                     />
-                    
-                    {/* Add Text Button */}
-                    <button
-                      onClick={handleAddText}
-                      className="w-full flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-blue-50 hover:border-blue-400 transition-colors"
-                    >
-                      <span className="text-xl">📝</span>
-                      <span className="text-sm font-medium text-gray-700">Add Text</span>
-                    </button>
                   </div>
                 </CollapsibleSection>
               </div>

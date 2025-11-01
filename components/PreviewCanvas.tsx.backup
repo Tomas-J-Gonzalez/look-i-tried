@@ -14,90 +14,80 @@ interface Scale {
   y: number;
 }
 
-interface TextElement {
-  id: string;
-  text: string;
-  position: { x: number; y: number };
-  scale: number;
-  rotation: number;
-}
-
 interface PreviewCanvasProps {
   faceImage: string | null;
   selectedShirt: string | null;
   selectedPants: string | null;
   selectedHeadwear: string | null;
-  selectedShoes: string | null;
+  selectedLeftShoe: string | null;
   backgroundImage: string | null;
   showLeftArm: boolean;
   showRightArm: boolean;
-  showLeftFoot: boolean;
-  showRightFoot: boolean;
+  showLeftShoe: boolean;
+  showRightShoe: boolean;
   facePosition: Position;
   shirtPosition: Position;
   pantsPosition: Position;
   headwearPosition: Position;
-  shoesPosition: Position;
+  leftShoePosition: Position;
   leftArmPosition: Position;
   rightArmPosition: Position;
-  leftFootPosition: Position;
-  rightFootPosition: Position;
+  leftShoePosition: Position;
+  rightShoePosition: Position;
   faceScale: Scale;
   shirtScale: Scale;
   pantsScale: Scale;
   headwearScale: Scale;
-  shoesScale: Scale;
+  leftShoeScale: Scale;
   leftArmScale: Scale;
   rightArmScale: Scale;
-  leftFootScale: Scale;
-  rightFootScale: Scale;
+  leftShoeScale: Scale;
+  rightShoeScale: Scale;
   faceRotation: number;
   shirtRotation: number;
   pantsRotation: number;
   headwearRotation: number;
-  shoesRotation: number;
+  leftShoeRotation: number;
   leftArmRotation: number;
   rightArmRotation: number;
-  leftFootRotation: number;
-  rightFootRotation: number;
+  leftShoeRotation: number;
+  rightShoeRotation: number;
   drawingOrder: string[];
   selectedItems: string[];
   onFacePositionChange: (pos: Position) => void;
   onShirtPositionChange: (pos: Position) => void;
   onPantsPositionChange: (pos: Position) => void;
   onHeadwearPositionChange: (pos: Position) => void;
-  onShoesPositionChange: (pos: Position) => void;
+  onLeftShoePositionChange: (pos: Position) => void;
   onLeftArmPositionChange: (pos: Position) => void;
   onRightArmPositionChange: (pos: Position) => void;
-  onLeftFootPositionChange: (pos: Position) => void;
-  onRightFootPositionChange: (pos: Position) => void;
+  onLeftShoePositionChange: (pos: Position) => void;
+  onRightShoePositionChange: (pos: Position) => void;
   onFaceScaleChange: (scale: Scale) => void;
   onShirtScaleChange: (scale: Scale) => void;
   onPantsScaleChange: (scale: Scale) => void;
   onHeadwearScaleChange: (scale: Scale) => void;
-  onShoesScaleChange: (scale: Scale) => void;
+  onLeftShoeScaleChange: (scale: Scale) => void;
   onLeftArmScaleChange: (scale: Scale) => void;
   onRightArmScaleChange: (scale: Scale) => void;
-  onLeftFootScaleChange: (scale: Scale) => void;
-  onRightFootScaleChange: (scale: Scale) => void;
+  onLeftShoeScaleChange: (scale: Scale) => void;
+  onRightShoeScaleChange: (scale: Scale) => void;
   onFaceRotationChange: (rotation: number) => void;
   onShirtRotationChange: (rotation: number) => void;
   onPantsRotationChange: (rotation: number) => void;
   onHeadwearRotationChange: (rotation: number) => void;
-  onShoesRotationChange: (rotation: number) => void;
+  onLeftShoeRotationChange: (rotation: number) => void;
   onLeftArmRotationChange: (rotation: number) => void;
   onRightArmRotationChange: (rotation: number) => void;
-  onLeftFootRotationChange: (rotation: number) => void;
-  onRightFootRotationChange: (rotation: number) => void;
-  textElements: TextElement[];
-  onTextElementsChange: (elements: TextElement[]) => void;
+  onLeftShoeRotationChange: (rotation: number) => void;
+  onRightShoeRotationChange: (rotation: number) => void;
   onItemSelect: (items: string[]) => void;
   onClearCanvas: () => void;
   onDeleteSelected: () => void;
   onSaveHistory: () => void;
 }
 
-type ItemType = 'head' | 'shirt' | 'pants' | 'headwear' | 'shoes' | 'leftArm' | 'rightArm' | 'leftFoot' | 'rightFoot';
+type ItemType = 'head' | 'shirt' | 'pants' | 'headwear' | 'leftShoe' | 'leftArm' | 'rightArm' | 'leftShoe' | 'rightShoe';
 
 interface ItemBounds {
   x: number;
@@ -111,70 +101,68 @@ export default function PreviewCanvas({
   selectedShirt,
   selectedPants,
   selectedHeadwear,
-  selectedShoes,
+  selectedLeftShoe,
   backgroundImage,
   showLeftArm,
   showRightArm,
-  showLeftFoot,
-  showRightFoot,
+  showLeftShoe,
+  showRightShoe,
   facePosition,
   shirtPosition,
   pantsPosition,
   headwearPosition,
-  shoesPosition,
+  leftShoePosition,
   leftArmPosition,
   rightArmPosition,
-  leftFootPosition,
-  rightFootPosition,
+  leftShoePosition,
+  rightShoePosition,
   faceScale,
   shirtScale,
   pantsScale,
   headwearScale,
-  shoesScale,
+  leftShoeScale,
   leftArmScale,
   rightArmScale,
-  leftFootScale,
-  rightFootScale,
+  leftShoeScale,
+  rightShoeScale,
   drawingOrder,
   selectedItems,
   onFacePositionChange,
   onShirtPositionChange,
   onPantsPositionChange,
   onHeadwearPositionChange,
-  onShoesPositionChange,
+  onLeftShoePositionChange,
   onLeftArmPositionChange,
   onRightArmPositionChange,
-  onLeftFootPositionChange,
-  onRightFootPositionChange,
+  onLeftShoePositionChange,
+  onRightShoePositionChange,
   onFaceScaleChange,
   onShirtScaleChange,
   onPantsScaleChange,
   onHeadwearScaleChange,
-  onShoesScaleChange,
+  onLeftShoeScaleChange,
   onLeftArmScaleChange,
   onRightArmScaleChange,
-  onLeftFootScaleChange,
-  onRightFootScaleChange,
+  onLeftShoeScaleChange,
+  onRightShoeScaleChange,
   faceRotation,
   shirtRotation,
   pantsRotation,
   headwearRotation,
-  shoesRotation,
+  leftShoeRotation,
   leftArmRotation,
   rightArmRotation,
-  leftFootRotation,
-  rightFootRotation,
+  leftShoeRotation,
+  rightShoeRotation,
   onFaceRotationChange,
   onShirtRotationChange,
   onPantsRotationChange,
   onHeadwearRotationChange,
-  onShoesRotationChange,
+  onLeftShoeRotationChange,
   onLeftArmRotationChange,
   onRightArmRotationChange,
-  onLeftFootRotationChange,
-  onRightFootRotationChange,
-  textElements,
-  onTextElementsChange,
+  onLeftShoeRotationChange,
+  onRightShoeRotationChange,
   onItemSelect,
   onClearCanvas,
   onDeleteSelected,
@@ -198,16 +186,14 @@ export default function PreviewCanvas({
   const [itemBounds, setItemBounds] = useState<Map<string, ItemBounds>>(new Map());
   const [imageCache, setImageCache] = useState<Map<string, HTMLImageElement>>(new Map());
   const [multiSelectStartPositions, setMultiSelectStartPositions] = useState<Map<string, Position>>(new Map());
-  const [editingTextId, setEditingTextId] = useState<string | null>(null);
-  const [textInputValue, setTextInputValue] = useState('');
   const animationFrameRef = useRef<number | null>(null);
 
   // Preload footwear images to prevent lag
   useEffect(() => {
     const preloadImages = [
-      selectedShoes,
-      showLeftFoot ? "/outfits/shoes/leftfoot.png" : null,
-      showRightFoot ? "/outfits/shoes/rightfoot.png" : null,
+      selectedLeftShoe,
+      showLeftShoe ? "/outfits/shoes/leftfoot.png" : null,
+      showRightShoe ? "/outfits/shoes/rightfoot.png" : null,
     ].filter(Boolean) as string[];
 
     preloadImages.forEach(src => {
@@ -217,7 +203,7 @@ export default function PreviewCanvas({
         });
       }
     });
-  }, [selectedShoes, showLeftFoot, showRightFoot]);
+  }, [selectedLeftShoe, showLeftShoe, showRightShoe]);
 
   // Keyboard event handler for Delete/Backspace
   useEffect(() => {
@@ -310,10 +296,10 @@ export default function PreviewCanvas({
         baseY: 50,
       },
       shoes: {
-        src: selectedShoes,
-        position: shoesPosition,
-        scale: shoesScale,
-        rotation: shoesRotation,
+        src: selectedLeftShoe,
+        position: leftShoePosition,
+        scale: leftShoeScale,
+        rotation: leftShoeRotation,
         baseWidth: 180,
         baseHeight: 100,
         baseX: (canvas.width - 180) / 2,
@@ -340,20 +326,20 @@ export default function PreviewCanvas({
         baseY: 200,
       },
       leftFoot: {
-        src: showLeftFoot ? "/outfits/shoes/leftfoot.png" : null,
-        position: leftFootPosition,
-        scale: leftFootScale,
-        rotation: leftFootRotation,
+        src: showLeftShoe ? "/outfits/shoes/leftfoot.png" : null,
+        position: leftShoePosition,
+        scale: leftShoeScale,
+        rotation: leftShoeRotation,
         baseWidth: 80,
         baseHeight: 90,
         baseX: (canvas.width / 2) - 70,
         baseY: 510,
       },
       rightFoot: {
-        src: showRightFoot ? "/outfits/shoes/rightfoot.png" : null,
-        position: rightFootPosition,
-        scale: rightFootScale,
-        rotation: rightFootRotation,
+        src: showRightShoe ? "/outfits/shoes/rightfoot.png" : null,
+        position: rightShoePosition,
+        scale: rightShoeScale,
+        rotation: rightShoeRotation,
         baseWidth: 80,
         baseHeight: 90,
         baseX: (canvas.width / 2) - 10,
@@ -469,48 +455,6 @@ export default function PreviewCanvas({
           }
         }
 
-        // Draw text elements (always on top)
-        textElements.forEach(textEl => {
-          const fontSize = 32 * textEl.scale;
-          const x = 300 + textEl.position.x; // Center of canvas
-          const y = 300 + textEl.position.y;
-          
-          // Measure text to get bounds
-          ctx.font = `${fontSize}px "Comic Sans MS", "Comic Sans", cursive`;
-          const metrics = ctx.measureText(textEl.text);
-          const textWidth = metrics.width;
-          const textHeight = fontSize;
-          
-          // Draw text with rotation
-          ctx.save();
-          ctx.translate(x, y);
-          ctx.rotate((textEl.rotation * Math.PI) / 180);
-          ctx.fillStyle = '#000000';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.font = `${fontSize}px "Comic Sans MS", "Comic Sans", cursive`;
-          ctx.fillText(textEl.text, 0, 0);
-          ctx.restore();
-          
-          // Store bounds for hit detection
-          newBounds.set(textEl.id, {
-            x: x - textWidth / 2,
-            y: y - textHeight / 2,
-            width: textWidth,
-            height: textHeight
-          });
-          
-          // Draw bounding box if selected
-          if (selectedItems.includes(textEl.id)) {
-            ctx.save();
-            ctx.strokeStyle = '#3b82f6';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            ctx.strokeRect(x - textWidth / 2, y - textHeight / 2, textWidth, textHeight);
-            ctx.restore();
-          }
-        });
-
         setItemBounds(newBounds);
       } catch (error) {
         console.error("Error drawing images:", error);
@@ -519,15 +463,15 @@ export default function PreviewCanvas({
 
     drawImages();
   }, [
-    faceImage, selectedShirt, selectedPants, selectedHeadwear, selectedShoes, backgroundImage,
-    showLeftArm, showRightArm, showLeftFoot, showRightFoot,
-    facePosition, shirtPosition, pantsPosition, headwearPosition, shoesPosition,
-    leftArmPosition, rightArmPosition, leftFootPosition, rightFootPosition,
-    faceScale, shirtScale, pantsScale, headwearScale, shoesScale,
-    leftArmScale, rightArmScale, leftFootScale, rightFootScale,
-    faceRotation, shirtRotation, pantsRotation, headwearRotation, shoesRotation,
-    leftArmRotation, rightArmRotation, leftFootRotation, rightFootRotation,
-    drawingOrder, selectedItems, textElements
+    faceImage, selectedShirt, selectedPants, selectedHeadwear, selectedLeftShoe, backgroundImage,
+    showLeftArm, showRightArm, showLeftShoe, showRightShoe,
+    facePosition, shirtPosition, pantsPosition, headwearPosition, leftShoePosition,
+    leftArmPosition, rightArmPosition, leftShoePosition, rightShoePosition,
+    faceScale, shirtScale, pantsScale, headwearScale, leftShoeScale,
+    leftArmScale, rightArmScale, leftShoeScale, rightShoeScale,
+    faceRotation, shirtRotation, pantsRotation, headwearRotation, leftShoeRotation,
+    leftArmRotation, rightArmRotation, leftShoeRotation, rightShoeRotation,
+    drawingOrder, selectedItems
   ]);
 
   const handleExport = () => {
@@ -571,23 +515,6 @@ export default function PreviewCanvas({
             console.log(`Could not load ${itemKey} for export`);
           }
         }
-
-        // Draw text elements on export
-        textElements.forEach(textEl => {
-          const fontSize = 32 * textEl.scale;
-          const x = 300 + textEl.position.x;
-          const y = 300 + textEl.position.y;
-          
-          tempCtx.save();
-          tempCtx.translate(x, y);
-          tempCtx.rotate((textEl.rotation * Math.PI) / 180);
-          tempCtx.fillStyle = '#000000';
-          tempCtx.textAlign = 'center';
-          tempCtx.textBaseline = 'middle';
-          tempCtx.font = `${fontSize}px "Comic Sans MS", "Comic Sans", cursive`;
-          tempCtx.fillText(textEl.text, 0, 0);
-          tempCtx.restore();
-        });
 
         // Export
         tempCanvas.toBlob((blob) => {
@@ -936,11 +863,11 @@ export default function PreviewCanvas({
               case 'shirt': onShirtPositionChange(newPos); break;
               case 'pants': onPantsPositionChange(newPos); break;
               case 'headwear': onHeadwearPositionChange(newPos); break;
-              case 'shoes': onShoesPositionChange(newPos); break;
+              case 'leftShoe': onLeftShoePositionChange(newPos); break;
               case 'leftArm': onLeftArmPositionChange(newPos); break;
               case 'rightArm': onRightArmPositionChange(newPos); break;
-              case 'leftFoot': onLeftFootPositionChange(newPos); break;
-              case 'rightFoot': onRightFootPositionChange(newPos); break;
+              case 'leftShoe': onLeftShoePositionChange(newPos); break;
+              case 'rightShoe': onRightShoePositionChange(newPos); break;
             }
           });
         } else {
@@ -959,11 +886,11 @@ export default function PreviewCanvas({
             case 'shirt': onShirtPositionChange(newPos); break;
             case 'pants': onPantsPositionChange(newPos); break;
             case 'headwear': onHeadwearPositionChange(newPos); break;
-            case 'shoes': onShoesPositionChange(newPos); break;
+            case 'leftShoe': onLeftShoePositionChange(newPos); break;
             case 'leftArm': onLeftArmPositionChange(newPos); break;
             case 'rightArm': onRightArmPositionChange(newPos); break;
-            case 'leftFoot': onLeftFootPositionChange(newPos); break;
-            case 'rightFoot': onRightFootPositionChange(newPos); break;
+            case 'leftShoe': onLeftShoePositionChange(newPos); break;
+            case 'rightShoe': onRightShoePositionChange(newPos); break;
           }
 
           setDragStart({ x, y });
@@ -1020,11 +947,11 @@ export default function PreviewCanvas({
       case 'shirt': return shirtScale;
       case 'pants': return pantsScale;
       case 'headwear': return headwearScale;
-      case 'shoes': return shoesScale;
+      case 'leftShoe': return leftShoeScale;
       case 'leftArm': return leftArmScale;
       case 'rightArm': return rightArmScale;
-      case 'leftFoot': return leftFootScale;
-      case 'rightFoot': return rightFootScale;
+      case 'leftShoe': return leftShoeScale;
+      case 'rightShoe': return rightShoeScale;
       default: return { x: 1, y: 1 };
     }
   };
@@ -1035,11 +962,11 @@ export default function PreviewCanvas({
       case 'shirt': onShirtScaleChange(scale); break;
       case 'pants': onPantsScaleChange(scale); break;
       case 'headwear': onHeadwearScaleChange(scale); break;
-      case 'shoes': onShoesScaleChange(scale); break;
+      case 'leftShoe': onLeftShoeScaleChange(scale); break;
       case 'leftArm': onLeftArmScaleChange(scale); break;
       case 'rightArm': onRightArmScaleChange(scale); break;
-      case 'leftFoot': onLeftFootScaleChange(scale); break;
-      case 'rightFoot': onRightFootScaleChange(scale); break;
+      case 'leftShoe': onLeftShoeScaleChange(scale); break;
+      case 'rightShoe': onRightShoeScaleChange(scale); break;
     }
   };
 
@@ -1049,11 +976,11 @@ export default function PreviewCanvas({
       case 'shirt': return shirtRotation;
       case 'pants': return pantsRotation;
       case 'headwear': return headwearRotation;
-      case 'shoes': return shoesRotation;
+      case 'leftShoe': return leftShoeRotation;
       case 'leftArm': return leftArmRotation;
       case 'rightArm': return rightArmRotation;
-      case 'leftFoot': return leftFootRotation;
-      case 'rightFoot': return rightFootRotation;
+      case 'leftShoe': return leftShoeRotation;
+      case 'rightShoe': return rightShoeRotation;
       default: return 0;
     }
   };
@@ -1064,11 +991,11 @@ export default function PreviewCanvas({
       case 'shirt': onShirtRotationChange(rotation); break;
       case 'pants': onPantsRotationChange(rotation); break;
       case 'headwear': onHeadwearRotationChange(rotation); break;
-      case 'shoes': onShoesRotationChange(rotation); break;
+      case 'leftShoe': onLeftShoeRotationChange(rotation); break;
       case 'leftArm': onLeftArmRotationChange(rotation); break;
       case 'rightArm': onRightArmRotationChange(rotation); break;
-      case 'leftFoot': onLeftFootRotationChange(rotation); break;
-      case 'rightFoot': onRightFootRotationChange(rotation); break;
+      case 'leftShoe': onLeftShoeRotationChange(rotation); break;
+      case 'rightShoe': onRightShoeRotationChange(rotation); break;
     }
   };
 
@@ -1122,31 +1049,6 @@ export default function PreviewCanvas({
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
-            onDoubleClick={(e) => {
-              const canvas = canvasRef.current;
-              if (!canvas) return;
-              const rect = canvas.getBoundingClientRect();
-              const scaleX = canvas.width / rect.width;
-              const scaleY = canvas.height / rect.height;
-              const x = (e.clientX - rect.left) * scaleX;
-              const y = (e.clientY - rect.top) * scaleY;
-              
-              // Check if clicking on a text element
-              for (const textEl of textElements) {
-                const bounds = itemBounds.get(textEl.id);
-                if (bounds && x >= bounds.x && x <= bounds.x + bounds.width &&
-                    y >= bounds.y && y <= bounds.y + bounds.height) {
-                  // Start editing this text
-                  const newText = prompt('Edit text:', textEl.text);
-                  if (newText !== null && newText.trim()) {
-                    onTextElementsChange(textElements.map(t => 
-                      t.id === textEl.id ? { ...t, text: newText } : t
-                    ));
-                  }
-                  return;
-                }
-              }
-            }}
             onWheel={(e) => {
               // Only allow scroll wheel resize for single selection
               if (isDragging && dragItem && selectedItems.length === 1) {
