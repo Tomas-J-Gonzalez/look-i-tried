@@ -103,15 +103,25 @@ export default function QRDownload({
     link.click();
   };
 
-  // Auto-generate when component mounts or canvas changes
-  useEffect(() => {
-    if (canvasRef.current) {
-      generateQRCode();
-    }
-  }, []);
+  // Don't auto-generate - user must click button
+  // useEffect(() => {
+  //   if (canvasRef.current) {
+  //     generateQRCode();
+  //   }
+  // }, []);
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6 bg-white rounded-lg border border-gray-200">
+    <div className="flex flex-col items-center gap-3">
+      {/* Initial State - Show button to generate QR */}
+      {!qrValue && !isGenerating && !error && (
+        <div className="text-center">
+          <p className="text-sm text-gray-600 mb-3">Want to download on your phone?</p>
+          <Button onClick={generateQRCode} variant="outline" className="w-full">
+            📱 Generate QR Code for Mobile
+          </Button>
+        </div>
+      )}
+
       {/* QR Code Display */}
       {isGenerating && (
         <div className="flex flex-col items-center gap-3">
@@ -139,7 +149,7 @@ export default function QRDownload({
       )}
 
       {qrValue && !isGenerating && (
-        <>
+        <div className="flex flex-col items-center gap-4 p-6 bg-white rounded-lg border border-gray-200">
           {/* QR Code */}
           <div className="p-4 bg-white rounded-lg border-2 border-gray-300 shadow-sm">
             <QRCodeSVG
@@ -188,14 +198,7 @@ export default function QRDownload({
           >
             🔄 Regenerate QR Code
           </Button>
-        </>
-      )}
-
-      {/* Initial Generate Button */}
-      {!qrValue && !isGenerating && !error && (
-        <Button onClick={generateQRCode} className="w-full">
-          Generate QR Code
-        </Button>
+        </div>
       )}
     </div>
   );
