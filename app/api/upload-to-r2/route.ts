@@ -73,12 +73,18 @@ export async function POST(request: Request) {
       ? `${R2_PUBLIC_URL}/${key}`
       : `https://pub-${R2_ACCOUNT_ID}.r2.dev/${key}`;
 
+    console.log('✅ Upload successful:', publicUrl);
+
     return NextResponse.json({ url: publicUrl });
 
   } catch (error) {
-    console.error("R2 upload error:", error);
+    console.error("❌ R2 upload error:", error);
     return NextResponse.json(
-      { error: "Failed to upload image" },
+      { 
+        error: "Failed to upload image",
+        details: error instanceof Error ? error.message : "Unknown error",
+        hint: "Check that your R2 bucket exists and credentials are correct"
+      },
       { status: 500 }
     );
   }
