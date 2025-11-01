@@ -381,8 +381,8 @@ export default function PreviewCanvas({
 
           try {
             const img = await loadImage(config.src);
-            const width = config.baseWidth * config.scale;
-            const height = config.baseHeight * config.scale;
+            const width = config.baseWidth * config.scale.x;
+            const height = config.baseHeight * config.scale.y;
             const x = config.baseX + config.position.x;
             const y = config.baseY + config.position.y;
             tempCtx.drawImage(img, x, y, width, height);
