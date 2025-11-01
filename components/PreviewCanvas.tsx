@@ -690,6 +690,31 @@ export default function PreviewCanvas({
       }
     }
 
+    // Check text elements first (they're always on top)
+    for (let i = textElements.length - 1; i >= 0; i--) {
+      const textEl = textElements[i];
+      const bounds = itemBounds.get(textEl.id);
+      
+      if (bounds && x >= bounds.x && x <= bounds.x + bounds.width &&
+          y >= bounds.y && y <= bounds.y + bounds.height) {
+        
+        // Handle text selection
+        if (isMultiSelect) {
+          const newSelection = selectedItems.includes(textEl.id)
+            ? selectedItems.filter(item => item !== textEl.id)
+            : [...selectedItems, textEl.id];
+          onItemSelect(newSelection);
+        } else {
+          onItemSelect([textEl.id]);
+        }
+        
+        setDragItem(textEl.id as any);
+        setIsDragging(true);
+        setDragStart({ x, y });
+        return;
+      }
+    }
+
     // Check items in reverse order (top to bottom in z-index)
     for (let i = drawingOrder.length - 1; i >= 0; i--) {
       const itemKey = drawingOrder[i];
