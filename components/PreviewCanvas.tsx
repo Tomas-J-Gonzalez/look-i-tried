@@ -1167,7 +1167,11 @@ export default function PreviewCanvas({
                 setTimeout(() => setShowScaleIndicator(false), 1000);
               }
             }}
-            className="border border-gray-300 rounded-lg shadow-sm cursor-move"
+            className="border border-gray-300 rounded-lg shadow-sm"
+            style={{ 
+              touchAction: 'none',
+              cursor: isDragging ? 'grabbing' : (isResizing || isRotating ? 'pointer' : 'default')
+            }}
           />
         </div>
       </div>
