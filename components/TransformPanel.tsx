@@ -3,9 +3,18 @@
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
 
+interface TextElement {
+  id: string;
+  text: string;
+  position: { x: number; y: number };
+  scale: number;
+  rotation: number;
+}
+
 interface TransformPanelProps {
   selectedItem: string | null; // For single selection (backwards compat)
   drawingOrder: string[];
+  textElements?: TextElement[];
   activeItems: Record<string, boolean>;
   onReorderLayers: (newOrder: string[]) => void;
   onSelectLayer: (item: string, isMulti?: boolean) => void;
@@ -16,6 +25,7 @@ interface TransformPanelProps {
 export default function TransformPanel({
   selectedItem,
   drawingOrder,
+  textElements = [],
   activeItems,
   onReorderLayers,
   onSelectLayer,
@@ -151,6 +161,7 @@ export default function TransformPanel({
   };
 
   const getItemIcon = (item: string) => {
+    if (item.startsWith('text-')) return '📝';
     const icons: Record<string, string> = {
       background: '🖼️',
       head: '😊',
@@ -167,6 +178,10 @@ export default function TransformPanel({
   };
 
   const getItemDisplayName = (item: string) => {
+    if (item.startsWith('text-')) {
+      const textEl = textElements.find(t => t.id === item);
+      return textEl ? `Text: ${textEl.text.substring(0, 20)}...` : 'Text';
+    }
     const names: Record<string, string> = {
       background: 'Background',
       head: 'Head',
@@ -221,6 +236,30 @@ export default function TransformPanel({
             <span className="text-xs text-gray-400 font-normal">(drag to reorder)</span>
           </label>
           <div className="space-y-1 max-h-64 overflow-y-auto">
+            {/* Text elements always appear on top */}
+            {textElements.slice().reverse().map((textEl) => {
+              const isSelected = selectedItems.length > 0 ? selectedItems.includes(textEl.id) : textEl.id === selectedItem;
+              
+              return (
+                <div
+                  key={textEl.id}
+                  onClick={(e) => {
+                    const isMulti = e.shiftKey || e.metaKey || e.ctrlKey;
+                    onSelectLayer(textEl.id, isMulti);
+                  }}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded text-xs transition-all cursor-pointer ${
+                    isSelected 
+                      ? 'bg-blue-100 border border-blue-400' 
+                      : 'bg-gray-50 border border-gray-200 hover:bg-gray-100'
+                  }`}
+                >
+                  <span className="text-base">📝</span>
+                  <span className="flex-1 text-left font-medium">{textEl.text.substring(0, 20)}{textEl.text.length > 20 ? '...' : ''}</span>
+                  <span className="text-xs text-gray-400">Text</span>
+                </div>
+              );
+            })}
+            {/* Regular items */}
             {drawingOrder.slice().reverse().filter(item => activeItems[item]).map((item, index) => {
               const isSelected = selectedItems.length > 0 ? selectedItems.includes(item) : item === selectedItem;
               const isDragging = item === draggedItem;
@@ -264,7 +303,7 @@ export default function TransformPanel({
                 </div>
               );
             })}
-            {drawingOrder.filter(item => activeItems[item]).length === 0 && (
+            {drawingOrder.filter(item => activeItems[item]).length === 0 && textElements.length === 0 && (
               <div className="text-center py-4 text-xs text-gray-400">
                 No layers yet. Add items to see them here.
               </div>

@@ -969,30 +969,41 @@ export default function PreviewCanvas({
             }
           });
         } else {
-          // Single item drag
-          const config = getItemConfig(dragItem);
-          if (!config) return;
+          // Single item drag - check if it's text first
+          const textEl = textElements.find(t => t.id === dragItem);
+          if (textEl) {
+            const newPos = {
+              x: textEl.position.x + deltaX,
+              y: textEl.position.y + deltaY,
+            };
+            onTextElementsChange(textElements.map(t =>
+              t.id === dragItem ? { ...t, position: newPos } : t
+            ));
+          } else {
+            const config = getItemConfig(dragItem);
+            if (!config) return;
 
-          const newPos = {
-            x: config.position.x + deltaX,
-            y: config.position.y + deltaY,
-          };
+            const newPos = {
+              x: config.position.x + deltaX,
+              y: config.position.y + deltaY,
+            };
 
-          // Update position based on item type
-          switch (dragItem) {
-            case 'head': onFacePositionChange(newPos); break;
-            case 'shirt': onShirtPositionChange(newPos); break;
-            case 'pants': onPantsPositionChange(newPos); break;
-            case 'headwear': onHeadwearPositionChange(newPos); break;
-            case 'shoes': onShoesPositionChange(newPos); break;
-            case 'leftArm': onLeftArmPositionChange(newPos); break;
-            case 'rightArm': onRightArmPositionChange(newPos); break;
-            case 'leftFoot': onLeftFootPositionChange(newPos); break;
-            case 'rightFoot': onRightFootPositionChange(newPos); break;
+            // Update position based on item type
+            switch (dragItem) {
+              case 'head': onFacePositionChange(newPos); break;
+              case 'shirt': onShirtPositionChange(newPos); break;
+              case 'pants': onPantsPositionChange(newPos); break;
+              case 'headwear': onHeadwearPositionChange(newPos); break;
+              case 'shoes': onShoesPositionChange(newPos); break;
+              case 'leftArm': onLeftArmPositionChange(newPos); break;
+              case 'rightArm': onRightArmPositionChange(newPos); break;
+              case 'leftFoot': onLeftFootPositionChange(newPos); break;
+              case 'rightFoot': onRightFootPositionChange(newPos); break;
+            }
           }
-
-          setDragStart({ x, y });
         }
+
+        setDragStart({ x, y });
       });
     }
   };

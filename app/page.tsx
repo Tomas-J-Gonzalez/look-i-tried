@@ -326,6 +326,12 @@ export default function Home() {
   // Delete selected item(s)
   const handleDeleteSelected = () => {
     selectedItems.forEach(item => {
+      // Check if it's a text element
+      if (item.startsWith('text-')) {
+        setTextElements(prev => prev.filter(t => t.id !== item));
+        return;
+      }
+      
       switch (item) {
         case 'head':
           setFaceImage(null);
@@ -527,6 +533,7 @@ export default function Home() {
             selectedItem={selectedItems[0]}
             selectedItems={selectedItems}
             drawingOrder={drawingOrder}
+            textElements={textElements}
             activeItems={{
               background: !!backgroundImage,
               head: !!faceImage,
