@@ -172,7 +172,10 @@ export default function PreviewCanvas({
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => resolve(img);
-      img.onerror = reject;
+      img.onerror = (err) => {
+        console.error(`❌ Failed to load image: ${src.substring(0, 50)}...`, err);
+        reject(err);
+      };
       img.src = src;
     });
   };
@@ -283,8 +286,10 @@ export default function PreviewCanvas({
 
     const drawImages = async () => {
       try {
-        // Clear canvas
+        // Clear canvas and fill with white background
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         const newBounds = new Map<string, ItemBounds>();
 
@@ -339,7 +344,11 @@ export default function PreviewCanvas({
               ctx.restore();
             }
           } catch (error) {
-            console.log(`Could not load ${itemKey} image:`, error);
+            console.error(`❌ Failed to load ${itemKey}:`, error);
+            // Show warning for head since it's critical
+            if (itemKey === 'head') {
+              console.error('⚠️ Head image failed to load. Check if image source is valid:', config.src?.substring(0, 100));
+            }
           }
         }
 
@@ -372,6 +381,10 @@ export default function PreviewCanvas({
       tempCanvas.height = canvas.height;
       const tempCtx = tempCanvas.getContext('2d');
       if (!tempCtx) return;
+
+      // Fill with white background
+      tempCtx.fillStyle = '#ffffff';
+      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
       // Draw all items without selection box
       const drawWithoutSelection = async () => {
@@ -807,9 +820,9 @@ export default function PreviewCanvas({
       </div>
 
       <div className="relative w-full flex justify-center">
-        {/* Checkered background to show transparency */}
+        {/* White background */}
         <div className="inline-block relative" style={{
-          background: 'repeating-conic-gradient(#f0f0f0 0% 25%, transparent 0% 50%) 50% / 20px 20px'
+          background: '#ffffff'
         }}>
           {/* Scale Indicator - shows when resizing (single item only) */}
           {showScaleIndicator && dragItem && selectedItems.length === 1 && (
