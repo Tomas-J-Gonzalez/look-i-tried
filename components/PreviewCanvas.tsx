@@ -631,7 +631,7 @@ export default function PreviewCanvas({
           const scaleChangeY = -deltaY / initialBounds.height;
           newScale.y = Math.max(0.3, Math.min(3, initialScale.y + scaleChangeY));
         }
-        // Corner handles - proportional scaling
+        // Corner handles - proportional scaling (maintains current aspect ratio)
         else {
           let scaleChange = 0;
           
@@ -649,8 +649,12 @@ export default function PreviewCanvas({
             scaleChange = (scaleChange + verticalChange) / 2;
           }
 
-          const uniformScale = Math.max(0.3, Math.min(3, initialScale.x + scaleChange));
-          newScale = { x: uniformScale, y: uniformScale };
+          // Maintain the current aspect ratio while scaling
+          const aspectRatio = initialScale.x / initialScale.y;
+          const newScaleX = Math.max(0.3, Math.min(3, initialScale.x + scaleChange));
+          const newScaleY = Math.max(0.3, Math.min(3, newScaleX / aspectRatio));
+          
+          newScale = { x: newScaleX, y: newScaleY };
         }
 
         updateItemScale(dragItem, newScale);
