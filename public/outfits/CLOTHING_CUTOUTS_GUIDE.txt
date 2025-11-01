@@ -1,0 +1,45 @@
+================================================================================
+CLOTHING CUT-OUTS SETUP GUIDE
+================================================================================
+
+The application is now configured to use realistic PNG clothing cut-outs instead 
+of simple SVG shapes.
+
+CURRENT STATUS:
+- Code updated to support PNG images
+- Paths in app/page.tsx point to .png files
+- Fallback to .svg if PNG not found (for backwards compatibility)
+
+NEXT STEPS TO ADD REAL CLOTHING CUT-OUTS:
+
+1. GET CLOTHING IMAGES:
+   - Download transparent PNG clothing cut-outs from:
+     * https://www.pngall.com/clothing-png/
+     * https://pixabay.com/vectors/search/clothing/
+     * https://cgdream.ai/
+   
+   OR create your own:
+   - Cut out clothing from product photos
+   - Use tools like Photoshop, GIMP, or online editors
+   - Ensure transparent background
+
+2. PREPARE IMAGES:
+   - Size: 400x600 pixels (matches canvas)
+   - Format: PNG with transparency
+   - Alignment: Center clothing horizontally
+   - Quality: High resolution for best results
+
+3. PLACE FILES:
+   - Shirts: public/outfits/shirts/shirt1.png, shirt2.png, shirt3.png
+   - Pants: public/outfits/pants/pants1.png, pants2.png, pants3.png
+
+4. VERIFY:
+   - The code will automatically use .png files if they exist
+   - Falls back to .svg if PNG is missing
+   - Check browser console for any loading errors
+
+FILE PATHS:
+- Shirts: /outfits/shirts/shirt1.png, shirt2.png, shirt3.png
+- Pants: /outfits/pants/pants1.png, pants2.png, pants3.png
+
+For detailed instructions, see: public/outfits/README.md

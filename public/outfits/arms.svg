@@ -1,0 +1,25 @@
+<svg width="400" height="600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient for realistic skin tone -->
+    <linearGradient id="skinGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F9DCC4;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#E8C5A8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D4B099;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Left arm (upper) -->
+  <ellipse cx="110" cy="280" rx="22" ry="75" fill="url(#skinGradient)" opacity="0.95" stroke="#C9A882" stroke-width="1.5" transform="rotate(-20 110 280)"/>
+  <!-- Left arm (lower) -->
+  <ellipse cx="95" cy="360" rx="18" ry="55" fill="url(#skinGradient)" opacity="0.95" stroke="#C9A882" stroke-width="1.5" transform="rotate(-15 95 360)"/>
+  <!-- Left hand -->
+  <ellipse cx="88" cy="410" rx="15" ry="12" fill="url(#skinGradient)" opacity="0.95" stroke="#C9A882" stroke-width="1"/>
+  
+  <!-- Right arm (upper) -->
+  <ellipse cx="290" cy="280" rx="22" ry="75" fill="url(#skinGradient)" opacity="0.95" stroke="#C9A882" stroke-width="1.5" transform="rotate(20 290 280)"/>
+  <!-- Right arm (lower) -->
+  <ellipse cx="305" cy="360" rx="18" ry="55" fill="url(#skinGradient)" opacity="0.95" stroke="#C9A882" stroke-width="1.5" transform="rotate(15 305 360)"/>
+  <!-- Right hand -->
+  <ellipse cx="312" cy="410" rx="15" ry="12" fill="url(#skinGradient)" opacity="0.95" stroke="#C9A882" stroke-width="1"/>
+</svg>
+
