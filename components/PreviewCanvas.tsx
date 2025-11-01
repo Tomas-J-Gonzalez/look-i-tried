@@ -43,6 +43,15 @@ interface PreviewCanvasProps {
   rightArmScale: Scale;
   leftFootScale: Scale;
   rightFootScale: Scale;
+  faceRotation: number;
+  shirtRotation: number;
+  pantsRotation: number;
+  headwearRotation: number;
+  shoesRotation: number;
+  leftArmRotation: number;
+  rightArmRotation: number;
+  leftFootRotation: number;
+  rightFootRotation: number;
   drawingOrder: string[];
   selectedItems: string[];
   onFacePositionChange: (pos: Position) => void;
@@ -63,9 +72,19 @@ interface PreviewCanvasProps {
   onRightArmScaleChange: (scale: Scale) => void;
   onLeftFootScaleChange: (scale: Scale) => void;
   onRightFootScaleChange: (scale: Scale) => void;
+  onFaceRotationChange: (rotation: number) => void;
+  onShirtRotationChange: (rotation: number) => void;
+  onPantsRotationChange: (rotation: number) => void;
+  onHeadwearRotationChange: (rotation: number) => void;
+  onShoesRotationChange: (rotation: number) => void;
+  onLeftArmRotationChange: (rotation: number) => void;
+  onRightArmRotationChange: (rotation: number) => void;
+  onLeftFootRotationChange: (rotation: number) => void;
+  onRightFootRotationChange: (rotation: number) => void;
   onItemSelect: (items: string[]) => void;
   onClearCanvas: () => void;
   onDeleteSelected: () => void;
+  onSaveHistory: () => void;
 }
 
 type ItemType = 'head' | 'shirt' | 'pants' | 'headwear' | 'shoes' | 'leftArm' | 'rightArm' | 'leftFoot' | 'rightFoot';
@@ -126,24 +145,46 @@ export default function PreviewCanvas({
   onRightArmScaleChange,
   onLeftFootScaleChange,
   onRightFootScaleChange,
+  faceRotation,
+  shirtRotation,
+  pantsRotation,
+  headwearRotation,
+  shoesRotation,
+  leftArmRotation,
+  rightArmRotation,
+  leftFootRotation,
+  rightFootRotation,
+  onFaceRotationChange,
+  onShirtRotationChange,
+  onPantsRotationChange,
+  onHeadwearRotationChange,
+  onShoesRotationChange,
+  onLeftArmRotationChange,
+  onRightArmRotationChange,
+  onLeftFootRotationChange,
+  onRightFootRotationChange,
   onItemSelect,
   onClearCanvas,
   onDeleteSelected,
+  onSaveHistory,
 }: PreviewCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
+  const [isRotating, setIsRotating] = useState(false);
   const [isMarqueeSelecting, setIsMarqueeSelecting] = useState(false);
   const [resizeHandle, setResizeHandle] = useState<string | null>(null);
   const [dragItem, setDragItem] = useState<ItemType | null>(null);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [marqueeStart, setMarqueeStart] = useState({ x: 0, y: 0 });
   const [marqueeEnd, setMarqueeEnd] = useState({ x: 0, y: 0 });
+  const [initialRotation, setInitialRotation] = useState(0);
   const [initialScale, setInitialScale] = useState<Scale>({ x: 1, y: 1 });
   const [initialBounds, setInitialBounds] = useState<ItemBounds | null>(null);
   const [showScaleIndicator, setShowScaleIndicator] = useState(false);
   const [itemBounds, setItemBounds] = useState<Map<string, ItemBounds>>(new Map());
+  const [imageCache, setImageCache] = useState<Map<string, HTMLImageElement>>(new Map());
   const [multiSelectStartPositions, setMultiSelectStartPositions] = useState<Map<string, Position>>(new Map());
   const animationFrameRef = useRef<number | null>(null);
 
@@ -166,12 +207,21 @@ export default function PreviewCanvas({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedItems, onDeleteSelected]);
 
-  // Helper function to load image
+  // Helper function to load image with caching (prevents glitching)
   const loadImage = (src: string): Promise<HTMLImageElement> => {
+    // Check cache first
+    const cached = imageCache.get(src);
+    if (cached && cached.complete) {
+      return Promise.resolve(cached);
+    }
+
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.crossOrigin = "anonymous";
-      img.onload = () => resolve(img);
+      img.onload = () => {
+        setImageCache(prev => new Map(prev).set(src, img));
+        resolve(img);
+      };
       img.onerror = (err) => {
         console.error(`❌ Failed to load image: ${src.substring(0, 50)}...`, err);
         reject(err);
@@ -190,6 +240,7 @@ export default function PreviewCanvas({
         src: faceImage,
         position: facePosition,
         scale: faceScale,
+        rotation: faceRotation,
         baseWidth: 120,
         baseHeight: 140,
         baseX: 300,
@@ -199,6 +250,7 @@ export default function PreviewCanvas({
         src: selectedShirt,
         position: shirtPosition,
         scale: shirtScale,
+        rotation: shirtRotation,
         baseWidth: 260,
         baseHeight: 300,
         baseX: (canvas.width - 260) / 2,
@@ -208,6 +260,7 @@ export default function PreviewCanvas({
         src: selectedPants,
         position: pantsPosition,
         scale: pantsScale,
+        rotation: pantsRotation,
         baseWidth: 260,
         baseHeight: 240,
         baseX: (canvas.width - 260) / 2,
@@ -217,6 +270,7 @@ export default function PreviewCanvas({
         src: selectedHeadwear,
         position: headwearPosition,
         scale: headwearScale,
+        rotation: headwearRotation,
         baseWidth: 140,
         baseHeight: 100,
         baseX: (canvas.width - 140) / 2,
@@ -226,6 +280,7 @@ export default function PreviewCanvas({
         src: selectedShoes,
         position: shoesPosition,
         scale: shoesScale,
+        rotation: shoesRotation,
         baseWidth: 180,
         baseHeight: 100,
         baseX: (canvas.width - 180) / 2,
@@ -235,6 +290,7 @@ export default function PreviewCanvas({
         src: showLeftArm ? "/outfits/arms/left-arm.png" : null,
         position: leftArmPosition,
         scale: leftArmScale,
+        rotation: leftArmRotation,
         baseWidth: 60,
         baseHeight: 180,
         baseX: 170,
@@ -244,6 +300,7 @@ export default function PreviewCanvas({
         src: showRightArm ? "/outfits/arms/right-arm.png" : null,
         position: rightArmPosition,
         scale: rightArmScale,
+        rotation: rightArmRotation,
         baseWidth: 60,
         baseHeight: 180,
         baseX: 370,
@@ -253,6 +310,7 @@ export default function PreviewCanvas({
         src: showLeftFoot ? "/outfits/shoes/leftfoot.png" : null,
         position: leftFootPosition,
         scale: leftFootScale,
+        rotation: leftFootRotation,
         baseWidth: 80,
         baseHeight: 90,
         baseX: (canvas.width / 2) - 70,
@@ -262,6 +320,7 @@ export default function PreviewCanvas({
         src: showRightFoot ? "/outfits/shoes/rightfoot.png" : null,
         position: rightFootPosition,
         scale: rightFootScale,
+        rotation: rightFootRotation,
         baseWidth: 80,
         baseHeight: 90,
         baseX: (canvas.width / 2) - 10,
@@ -304,11 +363,19 @@ export default function PreviewCanvas({
             const height = config.baseHeight * config.scale.y;
             const x = config.baseX + config.position.x;
             const y = config.baseY + config.position.y;
+            const rotation = config.rotation || 0;
 
-            // Draw the item
-            ctx.drawImage(img, x, y, width, height);
+            // Draw the item with rotation
+            ctx.save();
+            // Move to center of item
+            ctx.translate(x + width / 2, y + height / 2);
+            // Rotate (convert degrees to radians)
+            ctx.rotate((rotation * Math.PI) / 180);
+            // Draw from center
+            ctx.drawImage(img, -width / 2, -height / 2, width, height);
+            ctx.restore();
 
-            // Store bounds for hit detection
+            // Store bounds for hit detection (unrotated bounds for simplicity)
             newBounds.set(itemKey, { x, y, width, height });
 
             // Draw bounding box if this item is selected
@@ -339,6 +406,23 @@ export default function PreviewCanvas({
                 ctx.fillRect(x - handleSize / 2, y + height / 2 - handleSize / 2, handleSize, handleSize);
                 // Right
                 ctx.fillRect(x + width - handleSize / 2, y + height / 2 - handleSize / 2, handleSize, handleSize);
+                
+                // Draw rotation handle (circle above top center)
+                const rotateHandleY = y - 25;
+                const rotateHandleX = x + width / 2;
+                ctx.fillStyle = '#10b981'; // Green color
+                ctx.beginPath();
+                ctx.arc(rotateHandleX, rotateHandleY, 6, 0, 2 * Math.PI);
+                ctx.fill();
+                // Draw line connecting to top
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([]);
+                ctx.beginPath();
+                ctx.moveTo(x + width / 2, y);
+                ctx.lineTo(rotateHandleX, rotateHandleY);
+                ctx.stroke();
+                ctx.setLineDash([5, 5]); // Reset dashed line
               }
               
               ctx.restore();
@@ -360,12 +444,14 @@ export default function PreviewCanvas({
 
     drawImages();
   }, [
-    faceImage, selectedShirt, selectedPants, selectedHeadwear, backgroundImage,
+    faceImage, selectedShirt, selectedPants, selectedHeadwear, selectedShoes, backgroundImage,
     showLeftArm, showRightArm, showLeftFoot, showRightFoot,
-    facePosition, shirtPosition, pantsPosition, headwearPosition,
+    facePosition, shirtPosition, pantsPosition, headwearPosition, shoesPosition,
     leftArmPosition, rightArmPosition, leftFootPosition, rightFootPosition,
-    faceScale, shirtScale, pantsScale, headwearScale,
+    faceScale, shirtScale, pantsScale, headwearScale, shoesScale,
     leftArmScale, rightArmScale, leftFootScale, rightFootScale,
+    faceRotation, shirtRotation, pantsRotation, headwearRotation, shoesRotation,
+    leftArmRotation, rightArmRotation, leftFootRotation, rightFootRotation,
     drawingOrder, selectedItems
   ]);
 
@@ -398,7 +484,14 @@ export default function PreviewCanvas({
             const height = config.baseHeight * config.scale.y;
             const x = config.baseX + config.position.x;
             const y = config.baseY + config.position.y;
-            tempCtx.drawImage(img, x, y, width, height);
+            const rotation = config.rotation || 0;
+
+            // Draw with rotation (same as main canvas)
+            tempCtx.save();
+            tempCtx.translate(x + width / 2, y + height / 2);
+            tempCtx.rotate((rotation * Math.PI) / 180);
+            tempCtx.drawImage(img, -width / 2, -height / 2, width, height);
+            tempCtx.restore();
           } catch (error) {
             console.log(`Could not load ${itemKey} for export`);
           }
@@ -433,10 +526,17 @@ export default function PreviewCanvas({
 
   const isCompleteOutfit = faceImage && selectedShirt && selectedPants;
 
-  // Check if clicking on a resize handle
+  // Check if clicking on a resize or rotate handle
   const checkResizeHandle = (x: number, y: number, bounds: ItemBounds): string | null => {
     const handleSize = 8;
     const hitArea = 12; // Larger hit area for easier clicking
+    
+    // Check rotation handle first (higher priority)
+    const rotateHandleY = bounds.y - 25;
+    const rotateHandleX = bounds.x + bounds.width / 2;
+    if (Math.abs(x - rotateHandleX) <= hitArea && Math.abs(y - rotateHandleY) <= hitArea) {
+      return 'rotate';
+    }
     
     const handles = {
       // Corner handles (proportional scaling)
@@ -473,18 +573,26 @@ export default function PreviewCanvas({
 
     const isMultiSelect = e.shiftKey || e.metaKey || e.ctrlKey;
 
-    // First check if clicking on selected item's resize handle (only for single selection)
+    // First check if clicking on selected item's resize/rotate handle (only for single selection)
     if (selectedItems.length === 1) {
       const bounds = itemBounds.get(selectedItems[0]);
       if (bounds) {
         const handle = checkResizeHandle(x, y, bounds);
         if (handle) {
-          setIsResizing(true);
-          setResizeHandle(handle);
-          setDragItem(selectedItems[0] as ItemType);
-          setDragStart({ x, y });
-          setInitialScale(getItemScale(selectedItems[0] as ItemType));
-          setInitialBounds(bounds);
+          if (handle === 'rotate') {
+            setIsRotating(true);
+            setDragItem(selectedItems[0] as ItemType);
+            setDragStart({ x, y });
+            setInitialRotation(getItemRotation(selectedItems[0] as ItemType));
+            setInitialBounds(bounds);
+          } else {
+            setIsResizing(true);
+            setResizeHandle(handle);
+            setDragItem(selectedItems[0] as ItemType);
+            setDragStart({ x, y });
+            setInitialScale(getItemScale(selectedItems[0] as ItemType));
+            setInitialBounds(bounds);
+          }
           return;
         }
       }
@@ -586,7 +694,7 @@ export default function PreviewCanvas({
     }
 
     // Update cursor based on hover state (only for single selection)
-    if (!isDragging && !isResizing && selectedItems.length === 1) {
+    if (!isDragging && !isResizing && !isRotating && selectedItems.length === 1) {
       const bounds = itemBounds.get(selectedItems[0]);
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
@@ -597,6 +705,7 @@ export default function PreviewCanvas({
         const handle = checkResizeHandle(x, y, bounds);
         if (handle) {
           const cursors: Record<string, string> = {
+            'rotate': 'crosshair',
             'top-left': 'nwse-resize',
             'top-right': 'nesw-resize',
             'bottom-left': 'nesw-resize',
@@ -611,6 +720,35 @@ export default function PreviewCanvas({
         }
       }
       canvas.style.cursor = 'move';
+    }
+
+    // Handle rotation
+    if (isRotating && dragItem && initialBounds) {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+
+      animationFrameRef.current = requestAnimationFrame(() => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const currentX = (e.clientX - rect.left) * scaleX;
+        const currentY = (e.clientY - rect.top) * scaleY;
+
+        // Calculate angle from center of item
+        const centerX = initialBounds.x + initialBounds.width / 2;
+        const centerY = initialBounds.y + initialBounds.height / 2;
+
+        const initialAngle = Math.atan2(dragStart.y - centerY, dragStart.x - centerX);
+        const currentAngle = Math.atan2(currentY - centerY, currentX - centerX);
+        
+        // Calculate rotation delta in degrees
+        const deltaAngle = ((currentAngle - initialAngle) * 180) / Math.PI;
+        const newRotation = initialRotation + deltaAngle;
+
+        updateItemRotation(dragItem, newRotation);
+      });
+      return;
     }
 
     if (isResizing && dragItem && initialBounds) {
@@ -743,8 +881,14 @@ export default function PreviewCanvas({
   };
 
   const handleMouseUp = () => {
+    // Save to history if any transformation occurred
+    if (isDragging || isResizing || isRotating) {
+      onSaveHistory();
+    }
+
     setIsDragging(false);
     setIsResizing(false);
+    setIsRotating(false);
     setIsMarqueeSelecting(false);
     setResizeHandle(null);
     setDragItem(null);
@@ -804,6 +948,35 @@ export default function PreviewCanvas({
       case 'rightArm': onRightArmScaleChange(scale); break;
       case 'leftFoot': onLeftFootScaleChange(scale); break;
       case 'rightFoot': onRightFootScaleChange(scale); break;
+    }
+  };
+
+  const getItemRotation = (item: ItemType): number => {
+    switch (item) {
+      case 'head': return faceRotation;
+      case 'shirt': return shirtRotation;
+      case 'pants': return pantsRotation;
+      case 'headwear': return headwearRotation;
+      case 'shoes': return shoesRotation;
+      case 'leftArm': return leftArmRotation;
+      case 'rightArm': return rightArmRotation;
+      case 'leftFoot': return leftFootRotation;
+      case 'rightFoot': return rightFootRotation;
+      default: return 0;
+    }
+  };
+
+  const updateItemRotation = (item: ItemType, rotation: number) => {
+    switch (item) {
+      case 'head': onFaceRotationChange(rotation); break;
+      case 'shirt': onShirtRotationChange(rotation); break;
+      case 'pants': onPantsRotationChange(rotation); break;
+      case 'headwear': onHeadwearRotationChange(rotation); break;
+      case 'shoes': onShoesRotationChange(rotation); break;
+      case 'leftArm': onLeftArmRotationChange(rotation); break;
+      case 'rightArm': onRightArmRotationChange(rotation); break;
+      case 'leftFoot': onLeftFootRotationChange(rotation); break;
+      case 'rightFoot': onRightFootRotationChange(rotation); break;
     }
   };
 

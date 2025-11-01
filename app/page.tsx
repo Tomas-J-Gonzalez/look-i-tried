@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import OutfitSelector from "@/components/OutfitSelector";
 import PreviewCanvas from "@/components/PreviewCanvas";
 import NavBarFaceUploader from "@/components/NavBarFaceUploader";
@@ -45,6 +45,17 @@ export default function Home() {
   const [leftFootScale, setLeftFootScale] = useState({ x: 1, y: 1 });
   const [rightFootScale, setRightFootScale] = useState({ x: 1, y: 1 });
   
+  // Rotation state for each item (in degrees)
+  const [faceRotation, setFaceRotation] = useState(0);
+  const [shirtRotation, setShirtRotation] = useState(0);
+  const [pantsRotation, setPantsRotation] = useState(0);
+  const [headwearRotation, setHeadwearRotation] = useState(0);
+  const [shoesRotation, setShoesRotation] = useState(0);
+  const [leftArmRotation, setLeftArmRotation] = useState(0);
+  const [rightArmRotation, setRightArmRotation] = useState(0);
+  const [leftFootRotation, setLeftFootRotation] = useState(0);
+  const [rightFootRotation, setRightFootRotation] = useState(0);
+  
   // Drawing order for z-index control (background always first, then order matters)
   const [drawingOrder, setDrawingOrder] = useState<string[]>([
     'background', 'shoes', 'leftFoot', 'rightFoot', 'leftArm', 'rightArm', 'shirt', 'pants', 'headwear', 'head'
@@ -61,6 +72,125 @@ export default function Home() {
   
   // Reset canvas confirmation dialog
   const [showResetDialog, setShowResetDialog] = useState(false);
+  
+  // Undo/Redo History System
+  const [history, setHistory] = useState<any[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  
+  // Capture current state for history
+  const captureState = useCallback(() => {
+    return {
+      facePosition, shirtPosition, pantsPosition, headwearPosition, shoesPosition,
+      leftArmPosition, rightArmPosition, leftFootPosition, rightFootPosition,
+      faceScale, shirtScale, pantsScale, headwearScale, shoesScale,
+      leftArmScale, rightArmScale, leftFootScale, rightFootScale,
+      faceRotation, shirtRotation, pantsRotation, headwearRotation, shoesRotation,
+      leftArmRotation, rightArmRotation, leftFootRotation, rightFootRotation,
+      drawingOrder: [...drawingOrder],
+    };
+  }, [
+    facePosition, shirtPosition, pantsPosition, headwearPosition, shoesPosition,
+    leftArmPosition, rightArmPosition, leftFootPosition, rightFootPosition,
+    faceScale, shirtScale, pantsScale, headwearScale, shoesScale,
+    leftArmScale, rightArmScale, leftFootScale, rightFootScale,
+    faceRotation, shirtRotation, pantsRotation, headwearRotation, shoesRotation,
+    leftArmRotation, rightArmRotation, leftFootRotation, rightFootRotation,
+    drawingOrder
+  ]);
+  
+  // Save to history
+  const saveToHistory = useCallback(() => {
+    const newState = captureState();
+    setHistory(prev => [...prev.slice(0, historyIndex + 1), newState]);
+    setHistoryIndex(prev => prev + 1);
+  }, [captureState, historyIndex]);
+  
+  // Undo
+  const undo = useCallback(() => {
+    if (historyIndex > 0) {
+      const prevState = history[historyIndex - 1];
+      setFacePosition(prevState.facePosition);
+      setShirtPosition(prevState.shirtPosition);
+      setPantsPosition(prevState.pantsPosition);
+      setHeadwearPosition(prevState.headwearPosition);
+      setShoesPosition(prevState.shoesPosition);
+      setLeftArmPosition(prevState.leftArmPosition);
+      setRightArmPosition(prevState.rightArmPosition);
+      setLeftFootPosition(prevState.leftFootPosition);
+      setRightFootPosition(prevState.rightFootPosition);
+      setFaceScale(prevState.faceScale);
+      setShirtScale(prevState.shirtScale);
+      setPantsScale(prevState.pantsScale);
+      setHeadwearScale(prevState.headwearScale);
+      setShoesScale(prevState.shoesScale);
+      setLeftArmScale(prevState.leftArmScale);
+      setRightArmScale(prevState.rightArmScale);
+      setLeftFootScale(prevState.leftFootScale);
+      setRightFootScale(prevState.rightFootScale);
+      setFaceRotation(prevState.faceRotation);
+      setShirtRotation(prevState.shirtRotation);
+      setPantsRotation(prevState.pantsRotation);
+      setHeadwearRotation(prevState.headwearRotation);
+      setShoesRotation(prevState.shoesRotation);
+      setLeftArmRotation(prevState.leftArmRotation);
+      setRightArmRotation(prevState.rightArmRotation);
+      setLeftFootRotation(prevState.leftFootRotation);
+      setRightFootRotation(prevState.rightFootRotation);
+      setDrawingOrder(prevState.drawingOrder);
+      setHistoryIndex(prev => prev - 1);
+    }
+  }, [history, historyIndex]);
+  
+  // Redo
+  const redo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      const nextState = history[historyIndex + 1];
+      setFacePosition(nextState.facePosition);
+      setShirtPosition(nextState.shirtPosition);
+      setPantsPosition(nextState.pantsPosition);
+      setHeadwearPosition(nextState.headwearPosition);
+      setShoesPosition(nextState.shoesPosition);
+      setLeftArmPosition(nextState.leftArmPosition);
+      setRightArmPosition(nextState.rightArmPosition);
+      setLeftFootPosition(nextState.leftFootPosition);
+      setRightFootPosition(nextState.rightFootPosition);
+      setFaceScale(nextState.faceScale);
+      setShirtScale(nextState.shirtScale);
+      setPantsScale(nextState.pantsScale);
+      setHeadwearScale(nextState.headwearScale);
+      setShoesScale(nextState.shoesScale);
+      setLeftArmScale(nextState.leftArmScale);
+      setRightArmScale(nextState.rightArmScale);
+      setLeftFootScale(nextState.leftFootScale);
+      setRightFootScale(nextState.rightFootScale);
+      setFaceRotation(nextState.faceRotation);
+      setShirtRotation(nextState.shirtRotation);
+      setPantsRotation(nextState.pantsRotation);
+      setHeadwearRotation(nextState.headwearRotation);
+      setShoesRotation(nextState.shoesRotation);
+      setLeftArmRotation(nextState.leftArmRotation);
+      setRightArmRotation(nextState.rightArmRotation);
+      setLeftFootRotation(nextState.leftFootRotation);
+      setRightFootRotation(nextState.rightFootRotation);
+      setDrawingOrder(nextState.drawingOrder);
+      setHistoryIndex(prev => prev + 1);
+    }
+  }, [history, historyIndex]);
+  
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'z') {
+        e.preventDefault();
+        redo();
+      } else if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        e.preventDefault();
+        undo();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo, redo]);
 
   // Shirt options - realistic clothing cut-outs
   const shirtOptions = [
@@ -340,9 +470,28 @@ export default function Home() {
               onRightArmScaleChange={setRightArmScale}
               onLeftFootScaleChange={setLeftFootScale}
               onRightFootScaleChange={setRightFootScale}
+              faceRotation={faceRotation}
+              shirtRotation={shirtRotation}
+              pantsRotation={pantsRotation}
+              headwearRotation={headwearRotation}
+              shoesRotation={shoesRotation}
+              leftArmRotation={leftArmRotation}
+              rightArmRotation={rightArmRotation}
+              leftFootRotation={leftFootRotation}
+              rightFootRotation={rightFootRotation}
+              onFaceRotationChange={setFaceRotation}
+              onShirtRotationChange={setShirtRotation}
+              onPantsRotationChange={setPantsRotation}
+              onHeadwearRotationChange={setHeadwearRotation}
+              onShoesRotationChange={setShoesRotation}
+              onLeftArmRotationChange={setLeftArmRotation}
+              onRightArmRotationChange={setRightArmRotation}
+              onLeftFootRotationChange={setLeftFootRotation}
+              onRightFootRotationChange={setRightFootRotation}
               onItemSelect={setSelectedItems}
               onClearCanvas={handleClearCanvas}
               onDeleteSelected={handleDeleteSelected}
+              onSaveHistory={saveToHistory}
             />
           </div>
         </div>
