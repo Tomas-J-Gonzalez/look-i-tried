@@ -129,7 +129,7 @@ export default function NavBarFaceUploader({
       });
 
       // Process the image
-      let segmentationMask: ImageData | null = null;
+      let segmentationMask: any = null;
 
       selfieSegmentation.onResults((results) => {
         if (results.segmentationMask) {

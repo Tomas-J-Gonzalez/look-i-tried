@@ -80,7 +80,7 @@ export default function BackgroundRemover({
       });
 
       // Process the image
-      let segmentationMask: ImageData | null = null;
+      let segmentationMask: any = null;
 
       selfieSegmentation.onResults((results) => {
         if (results.segmentationMask) {
@@ -282,7 +282,7 @@ export async function removeBackgroundFromImage(
         selfieMode: true,
       });
 
-      let segmentationMask: ImageData | null = null;
+      let segmentationMask: any = null;
 
       selfieSegmentation.onResults((results) => {
         if (results.segmentationMask) {

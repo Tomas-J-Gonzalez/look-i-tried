@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 interface OutfitSelectorProps {
-  category: "shirts" | "pants" | "shoes";
+  category: "shirts" | "pants" | "shoes" | "headwear";
   options: string[];
   selected: string | null;
   onSelect: (option: string) => void;

@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
       response_format: "url",
     });
 
-    const shirtUrl = shirtResponse.data[0]?.url;
-    const pantsUrl = pantsResponse.data[0]?.url;
+    const shirtUrl = shirtResponse.data?.[0]?.url;
+    const pantsUrl = pantsResponse.data?.[0]?.url;
 
     if (!shirtUrl || !pantsUrl) {
       return NextResponse.json(
